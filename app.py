@@ -3,12 +3,14 @@ from ingestion.url_capture import URLCapture
 from preprocessing.image_analyzer import ImageAnalyzer
 from preprocessing.density_analyzer import DensityAnalyzer
 
+from planner.grid_planner import GridPlanner
+
 
 # -------------------------
 # CONFIG
 # -------------------------
 
-INPUT_MODE = "url"     # "url" or "image"
+INPUT_MODE = "url"      # "url" or "image"
 
 IMAGE_PATH = "uploads/stripe_sample.png"
 
@@ -72,6 +74,13 @@ def main():
         **density_metadata
     }
 
+    planner = GridPlanner()
+
+    grid_plan = planner.plan(
+        analysis_report
+    )
+
+    analysis_report["grid_plan"] = grid_plan
     # -------------------------
     # Output
     # -------------------------
