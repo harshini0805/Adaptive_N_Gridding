@@ -5,6 +5,9 @@ from preprocessing.density_analyzer import DensityAnalyzer
 
 from planner.grid_planner import GridPlanner
 
+from tiling.tile_generator import TileGenerator
+from regions.region_generator import RegionGenerator
+
 
 # -------------------------
 # CONFIG
@@ -50,22 +53,26 @@ def main():
     image_path = input_data["image_path"]
 
     # -------------------------
-    # Preprocessing
+    # Image Analysis
     # -------------------------
 
     image_analyzer = ImageAnalyzer()
-    density_analyzer = DensityAnalyzer()
-
     image_metadata = image_analyzer.analyze(
         image_path
     )
+
+    # -------------------------
+    # Density Analysis
+    # -------------------------
+
+    density_analyzer = DensityAnalyzer()
 
     density_metadata = density_analyzer.analyze(
         image_path
     )
 
     # -------------------------
-    # Merge Results
+    # Merge Analysis
     # -------------------------
 
     analysis_report = {
@@ -74,6 +81,10 @@ def main():
         **density_metadata
     }
 
+    # -------------------------
+    # Grid Planning
+    # -------------------------
+
     planner = GridPlanner()
 
     grid_plan = planner.plan(
@@ -81,6 +92,38 @@ def main():
     )
 
     analysis_report["grid_plan"] = grid_plan
+
+    # -------------------------
+    # Tile Generation
+    # -------------------------
+
+    tile_generator = TileGenerator()
+
+    tiles_metadata = tile_generator.generate(
+        image_path,
+        grid_plan
+    )
+
+    analysis_report["num_tiles"] = len(
+        tiles_metadata
+    )
+
+    analysis_report["tiles_metadata"] = (
+        tiles_metadata
+    )
+
+    # -------------------------
+    # Region Generation
+    # -------------------------
+
+    region_generator = RegionGenerator()
+
+    regions = region_generator.generate(
+        tiles_metadata
+    )
+
+    analysis_report["regions"] = regions
+
     # -------------------------
     # Output
     # -------------------------
@@ -88,7 +131,22 @@ def main():
     print("\n===== ANALYSIS REPORT =====\n")
 
     for key, value in analysis_report.items():
-        print(f"{key}: {value}")
+
+        if key not in [
+            "tiles_metadata",
+            "regions"
+        ]:
+            print(f"{key}: {value}")
+
+    print("\n===== GENERATED TILES =====\n")
+
+    for tile in tiles_metadata:
+        print(tile)
+
+    print("\n===== REGIONS =====\n")
+
+    for region in regions:
+        print(region)
 
 
 if __name__ == "__main__":

@@ -17,12 +17,12 @@ class GridPlanner:
                 "strategy": "dense_grid",
                 "rows": 3,
                 "cols": 3,
-                "reason": "edge_density=0.18"
+                "reason": f'edge_density={analysis_report["edge_density"]}'
             }
-            
 
         return {
             "strategy": "standard_grid",
             "rows": 2,
-            "cols": 2
+            "cols": 2,
+            "reason": "default_strategy"
         }
