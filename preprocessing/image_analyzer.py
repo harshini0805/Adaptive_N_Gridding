@@ -1,64 +1,33 @@
-#To Input Screenshot, Extract Metadata, Classify Screen Type, Return Analysis
+#To Input Screenshot, Extract Metadata, Return Analysis
 
-#Imports 
-from PIL import Image 
+#Imports
+from PIL import Image
 
-class ImageAnalyzer: 
-
-    #To classify the different screens 
-    def classify_screen(self, width, height):
-        
-        aspect_ratio = width / height
-        scroll_ratio=(height/width)
-        
-        #To check for long screen because 1920x4500 and 1080x4500 are very different screens
-        is_long_scroll = scroll_ratio > 3
-        
-        if aspect_ratio < 0.7:
-            return (
-                "mobile",
-                is_long_scroll,
-                f"aspect_ratio={aspect_ratio:.2f}, scroll_ratio={scroll_ratio:.2f}"
-            )
-
-        #to check: never reaches the long_scroll condition.
-        return (
-            "desktop",
-            is_long_scroll,
-            f"aspect_ratio={aspect_ratio:.2f}, scroll_ratio={scroll_ratio:.2f}"
-        )
+class ImageAnalyzer:
 
     #Analysis
-    def analyze(self,image_path):
+    def analyze(self, image_path):
 
-        #Checking if the image path exists or not 
+        #Checking if the image path exists or not
         try:
             image = Image.open(image_path)
         except Exception as e:
             raise ValueError(f"Invalid image file: {e}")
-        
-        
-        width, height = image.size 
-        aspect_ratio = round(width/height,2)
-        total_pixels = width*height 
-        device_type,is_long_scroll,reason = self.classify_screen(width,height)
+
+        width, height = image.size
 
         return {
-            "width":width, 
-            "height":height, 
-            "aspect_ratio":aspect_ratio, 
-            "total_pixels":total_pixels,
+            "width": width,
+            "height": height,
 
-            "device_type":device_type,
-            "is_long_scroll": is_long_scroll,
-            "classification_reason":reason,
+            "aspect_ratio": round(width / height, 2),
+            "scroll_ratio": round(height / width, 2),
 
-            "density_score":None,
-            "grid_strategy":None
+            "total_pixels": width * height,
 
+            "is_long_scroll": (height / width) > 3
         }
-    
-    
+       
 """### Current Code Review (Phase 1.1)
 
 #### Fix Now

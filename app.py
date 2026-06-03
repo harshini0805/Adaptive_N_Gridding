@@ -1,28 +1,86 @@
+from ingestion.url_capture import URLCapture
+
 from preprocessing.image_analyzer import ImageAnalyzer
 from preprocessing.density_analyzer import DensityAnalyzer
 
+
+# -------------------------
+# CONFIG
+# -------------------------
+
+INPUT_MODE = "url"     # "url" or "image"
+
 IMAGE_PATH = "uploads/stripe_sample.png"
+
+URL = "https://stripe.com"
+
+
+# -------------------------
+# MAIN
+# -------------------------
 
 def main():
 
-    # Initialize analyzers
+    # -------------------------
+    # Ingestion Layer
+    # -------------------------
+
+    if INPUT_MODE == "image":
+
+        input_data = {
+            "input_type": "image",
+            "image_path": IMAGE_PATH
+        }
+
+    elif INPUT_MODE == "url":
+
+        capture = URLCapture()
+
+        input_data = capture.capture(
+            url=URL,
+            viewport_width=1440,
+            viewport_height=900
+        )
+
+    else:
+        raise ValueError("Invalid INPUT_MODE")
+
+    image_path = input_data["image_path"]
+
+    # -------------------------
+    # Preprocessing
+    # -------------------------
+
     image_analyzer = ImageAnalyzer()
     density_analyzer = DensityAnalyzer()
 
-    # Analyze image metadata
-    image_metadata = image_analyzer.analyze(IMAGE_PATH)
+    image_metadata = image_analyzer.analyze(
+        image_path
+    )
 
-    # Analyze density
-    density_score = density_analyzer.density_score(IMAGE_PATH)
+    density_metadata = density_analyzer.analyze(
+        image_path
+    )
 
-    # Merge results
-    image_metadata["density_score"] = density_score
+    # -------------------------
+    # Merge Results
+    # -------------------------
 
-    print("\n===== ANALYSIS REPORT =====")
+    analysis_report = {
+        **input_data,
+        **image_metadata,
+        **density_metadata
+    }
 
-    for key, value in image_metadata.items():
+    # -------------------------
+    # Output
+    # -------------------------
+
+    print("\n===== ANALYSIS REPORT =====\n")
+
+    for key, value in analysis_report.items():
         print(f"{key}: {value}")
+
 
 if __name__ == "__main__":
     main()
-    
